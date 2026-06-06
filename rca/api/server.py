@@ -92,7 +92,7 @@ async def analyze_incident(
 def main() -> None:
     import uvicorn
 
-    uvicorn.run("rca.api.server:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("rca.api.server:app", host="0.0.0.0", port=8000, reload=True)  # nosec B104
 
 
 if __name__ == "__main__":
