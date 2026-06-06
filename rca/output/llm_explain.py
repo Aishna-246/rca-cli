@@ -4,7 +4,7 @@ import os
 def generate_explanation(ranked_causes: list[dict], log_events: list[dict]) -> str:
     """
     Generate a plain-English summary of incident root cause, cascade, and fix.
-    Uses Anthropic Claude (Haiku 3) via API key in ANTHROPIC_API_KEY.
+    Uses Groq (llama3-8b-8192) via API key in GROQ_API_KEY.
     Fails gracefully (returns '') if no key or other error.
     """
     try:
@@ -15,9 +15,9 @@ def generate_explanation(ranked_causes: list[dict], log_events: list[dict]) -> s
         except ImportError:
             pass  # dot-ent is optional; doc required adding python-dotenv for best results
 
-        api_key = os.getenv("ANTHROPIC_API_KEY")
+        api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
-            print("[yellow]No ANTHROPIC_API_KEY set: skipping LLM explanation.[/yellow]")
+            print("[yellow]No GROQ_API_KEY set: skipping LLM explanation.[/yellow]")
             return ""
 
         # Select top 3 root causes with evidence
@@ -84,37 +84,15 @@ Write a 3-sentence plain English explanation of:
 Be specific. Use service names. No jargon.
 """
 
-        # Call Anthropic Claude via REST API
-        import requests
+        from groq import Groq
 
-        payload = {
-            "model": "claude-3-haiku-20240307",
-            "max_tokens": 300,
-            "temperature": 0.3,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt.strip(),
-                }
-            ]
-        }
-        headers = {
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json"
-        }
-        url = "https://api.anthropic.com/v1/messages"
-        resp = requests.post(url, json=payload, headers=headers, timeout=30)
-        resp.raise_for_status()
-        js = resp.json()
-        # Claude-3 returns completions in .content as a list of dicts of type="text"
-        content = ""
-        completions = js.get("content")
-        if completions and isinstance(completions, list):
-            content = "".join([p.get("text","") for p in completions if p.get("type")=="text"])
-        elif js.get("completion"):  # fallback
-            content = js["completion"]
-        return content.strip()
+        client = Groq(api_key=api_key)
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=300,
+        )
+        return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"[yellow]LLM explanation API error: {e}[/yellow]")
         return ""

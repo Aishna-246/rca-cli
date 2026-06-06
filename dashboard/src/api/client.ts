@@ -26,17 +26,28 @@ export async function fetchIncidentGraph(id: string): Promise<GraphData> {
 }
 
 export interface RunAnalysisRequest {
-  log_paths: string[];
-  metrics_path?: string;
+  logs: File[];
+  metrics?: File;
   since?: string;
   explain?: boolean;
 }
 
 export async function runAnalysis(request: RunAnalysisRequest): Promise<{ id: string }> {
-  const response = await fetch(`${API_BASE}/api/run`, {
+  const form = new FormData();
+  for (const file of request.logs) {
+    form.append('logs', file);
+  }
+  if (request.metrics) {
+    form.append('metrics', request.metrics);
+  }
+  if (request.since) {
+    form.append('since', request.since);
+  }
+  form.append('explain', request.explain ? 'true' : 'false');
+
+  const response = await fetch(`${API_BASE}/api/analyze`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
+    body: form,
   });
   const report = await handleResponse<{ id: string }>(response);
   return { id: report.id };

@@ -57,10 +57,8 @@ function UploadModal({
   onClose: () => void;
   onSubmitted: (id: string) => void;
 }) {
-  const [logPaths, setLogPaths] = useState(
-    'tests/sample_logs/orders.log\ntests/sample_logs/payment.log',
-  );
-  const [metricsPath, setMetricsPath] = useState('tests/sample_logs/prom.json');
+  const [logFiles, setLogFiles] = useState<File[]>([]);
+  const [metricsFile, setMetricsFile] = useState<File | null>(null);
   const [since, setSince] = useState('2024-01-01T02:11:00');
   const [explain, setExplain] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -68,12 +66,8 @@ function UploadModal({
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const paths = logPaths
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean);
-    if (paths.length === 0) {
-      setError('Enter at least one log file path.');
+    if (logFiles.length === 0) {
+      setError('Select at least one log file.');
       return;
     }
 
@@ -81,8 +75,8 @@ function UploadModal({
     setError(null);
     try {
       const result = await runAnalysis({
-        log_paths: paths,
-        metrics_path: metricsPath.trim() || undefined,
+        logs: logFiles,
+        metrics: metricsFile ?? undefined,
         since: since.trim() || undefined,
         explain,
       });
@@ -114,24 +108,25 @@ function UploadModal({
         <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
           <label className="block">
             <span className="mb-1 block text-sm text-gh-muted">
-              Log file paths (one per line, relative to project root)
+              Log files (can select multiple)
             </span>
-            <textarea
-              rows={3}
-              value={logPaths}
-              onChange={(e) => setLogPaths(e.target.value)}
-              className="w-full rounded border border-gh-border bg-gh-bg px-3 py-2 font-mono text-sm"
+            <input
+              type="file"
+              multiple
+              accept=".log,.txt"
+              onChange={(e) => setLogFiles(Array.from(e.target.files ?? []))}
+              className="w-full rounded border border-gh-border bg-gh-bg px-3 py-2 text-sm text-gh-muted"
             />
           </label>
           <label className="block">
             <span className="mb-1 block text-sm text-gh-muted">
-              Metrics file path (JSON or CSV)
+              Metrics file (JSON or CSV, optional)
             </span>
             <input
-              type="text"
-              value={metricsPath}
-              onChange={(e) => setMetricsPath(e.target.value)}
-              className="w-full rounded border border-gh-border bg-gh-bg px-3 py-2 font-mono text-sm"
+              type="file"
+              accept=".json,.csv"
+              onChange={(e) => setMetricsFile(e.target.files?.[0] ?? null)}
+              className="w-full rounded border border-gh-border bg-gh-bg px-3 py-2 text-sm text-gh-muted"
             />
           </label>
           <label className="block">
