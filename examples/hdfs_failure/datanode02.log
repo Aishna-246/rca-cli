@@ -1,0 +1,26 @@
+2024-03-15 14:20:15,221 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Starting DataNode with maxLockedMemory = 0
+2024-03-15 14:20:15,332 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Opened streaming server at /0.0.0.0:50010
+2024-03-15 14:20:15,441 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Balancing bandwidth is 10485760 bytes/s
+2024-03-15 14:20:15,552 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Block pool BP-1234567890-10.0.1.10-1710000000000 service to namenode01/10.0.1.10:8020 starting to offer service
+2024-03-15 14:20:16,001 INFO org.apache.hadoop.hdfs.server.datanode.DataXceiverServer: Listening for incoming connections on 10.0.1.12:50010
+2024-03-15 14:20:30,112 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Successfully registered with NameNode namenode01:8020
+2024-03-15 14:21:00,221 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Block report sent to namenode01. Total blocks: 16234
+2024-03-15 14:21:30,001 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Heartbeat sent successfully. Storage capacity: 2199023255552 Used: 934512398176
+2024-03-15 14:22:00,112 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Heartbeat sent successfully. Storage capacity: 2199023255552 Used: 934521398176
+2024-03-15 14:22:10,221 WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Slow disk I/O detected on volume /data/dfs/dn — latency 2341ms (threshold: 300ms)
+2024-03-15 14:22:12,332 WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Slow disk I/O detected on volume /data/dfs/dn — latency 3891ms (threshold: 300ms)
+2024-03-15 14:22:13,001 WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Slow disk I/O detected on volume /data/dfs/dn — latency 5221ms (threshold: 300ms)
+2024-03-15 14:22:13,441 ERROR org.apache.hadoop.hdfs.server.datanode.DataNode: Disk failure detected on /data/dfs/dn: java.io.IOException: Input/output error
+	at java.io.FileOutputStream.writeBytes(Native Method)
+	at java.io.FileOutputStream.write(FileOutputStream.java:326)
+	at org.apache.hadoop.hdfs.server.datanode.fsdataset.impl.FsDatasetImpl.finalizeBlock(FsDatasetImpl.java:1901)
+2024-03-15 14:22:13,552 ERROR org.apache.hadoop.hdfs.server.datanode.DataNode: Volume failure detected on /data/dfs/dn. Removing from active volumes. Remaining volumes: 0
+2024-03-15 14:22:13,663 ERROR org.apache.hadoop.hdfs.server.datanode.DataNode: All volumes have failed. DataNode is shutting down
+2024-03-15 14:22:13,774 WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Sending block report failed — DataNode shutting down
+2024-03-15 14:22:14,001 ERROR org.apache.hadoop.hdfs.server.datanode.DataNode: FATAL: DataNode shutting down after unrecoverable disk failure
+	java.io.IOException: No volumes available for DataNode operations
+	at org.apache.hadoop.hdfs.server.datanode.fsdataset.impl.FsDatasetImpl.getReplicaInfo(FsDatasetImpl.java:665)
+	at org.apache.hadoop.hdfs.server.datanode.fsdataset.impl.FsDatasetImpl.finalizeBlock(FsDatasetImpl.java:1891)
+2024-03-15 14:22:14,112 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Shutdown hook called. Shutting down DataNode
+2024-03-15 14:22:14,223 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Stopping block scanner and writer threads
+2024-03-15 14:22:14,334 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: DataNode shutdown complete

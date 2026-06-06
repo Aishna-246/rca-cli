@@ -1,0 +1,50 @@
+2024-03-15 14:20:01,042 INFO org.apache.hadoop.hdfs.server.namenode.NameNode: NameNode RPC up at: namenode01/10.0.1.10:8020
+2024-03-15 14:20:01,891 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: fsOwner=hdfs (auth:SIMPLE)
+2024-03-15 14:20:02,103 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: defaultReplication = 3
+2024-03-15 14:20:02,441 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Total number of blocks = 48291
+2024-03-15 14:20:03,012 INFO org.apache.hadoop.hdfs.server.namenode.NameNode: Web-server up at: namenode01:50070
+2024-03-15 14:20:15,331 INFO org.apache.hadoop.hdfs.server.blockmanagement.DatanodeManager: Registered new datanode: datanode01:50010
+2024-03-15 14:20:15,442 INFO org.apache.hadoop.hdfs.server.blockmanagement.DatanodeManager: Registered new datanode: datanode02:50010
+2024-03-15 14:20:15,553 INFO org.apache.hadoop.hdfs.server.blockmanagement.DatanodeManager: Registered new datanode: datanode03:50010
+2024-03-15 14:20:15,661 INFO org.apache.hadoop.hdfs.server.blockmanagement.DatanodeManager: Registered new datanode: datanode04:50010
+2024-03-15 14:20:15,772 INFO org.apache.hadoop.hdfs.server.blockmanagement.DatanodeManager: Registered new datanode: datanode05:50010
+2024-03-15 14:20:30,001 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Registered FSNamesystem MBean
+2024-03-15 14:20:30,112 INFO org.apache.hadoop.hdfs.server.namenode.NameNode: NameNode startup complete
+2024-03-15 14:21:00,221 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Under replicated blocks: 0
+2024-03-15 14:21:30,331 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: 48291 blocks total, 0 corrupt, 0 under-replicated
+2024-03-15 14:22:00,441 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Heartbeat from datanode03:50010 - capacity: 2199023255552, used: 891234123776
+2024-03-15 14:22:00,552 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Heartbeat from datanode04:50010 - capacity: 2199023255552, used: 902341298176
+2024-03-15 14:22:00,663 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Heartbeat from datanode05:50010 - capacity: 2199023255552, used: 887123451904
+2024-03-15 14:22:15,001 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Heartbeat from datanode01:50010 - capacity: 2199023255552, used: 912341298176
+2024-03-15 14:22:15,112 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Heartbeat from datanode02:50010 - capacity: 2199023255552, used: 934512398176
+2024-03-15 14:22:30,221 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Replication monitor thread 0 iteration 142
+2024-03-15 14:22:44,891 WARN org.apache.hadoop.hdfs.server.blockmanagement.DatanodeManager: Heartbeat expiry for datanode02:50010 — last heartbeat 30021ms ago
+2024-03-15 14:22:44,902 WARN org.apache.hadoop.hdfs.server.blockmanagement.DatanodeManager: Heartbeat expiry for datanode02:50010 — marking as STALE
+2024-03-15 14:22:45,001 ERROR org.apache.hadoop.hdfs.server.blockmanagement.DatanodeManager: datanode02:50010 is considered dead. Last heartbeat timestamp: 1710510135112
+2024-03-15 14:22:45,112 WARN org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Node datanode02:50010 is dead. Adding 3821 blocks to replication queue
+2024-03-15 14:22:45,223 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Under replicated blocks increased: 0 -> 3821
+2024-03-15 14:22:45,334 WARN org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Replication queue size: 3821. Starting emergency replication
+2024-03-15 14:22:46,001 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Scheduled replication of blk_1073741901_1077 from datanode01:50010 to datanode04:50010
+2024-03-15 14:22:46,112 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Scheduled replication of blk_1073741902_1078 from datanode03:50010 to datanode05:50010
+2024-03-15 14:22:46,441 WARN org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Low replication detected — 3821 blocks below target replication of 3
+2024-03-15 14:22:47,001 ERROR org.apache.hadoop.hdfs.server.namenode.FSNamesystem: BLOCK* NameSystem.addStoredBlock: Insufficient replication for blk_1073742891_2099. Current: 2 Expected: 3
+2024-03-15 14:22:47,112 ERROR org.apache.hadoop.hdfs.server.namenode.FSNamesystem: BLOCK* NameSystem.addStoredBlock: Insufficient replication for blk_1073742892_2100. Current: 2 Expected: 3
+2024-03-15 14:22:47,223 ERROR org.apache.hadoop.hdfs.server.namenode.FSNamesystem: BLOCK* NameSystem.addStoredBlock: Insufficient replication for blk_1073742893_2101. Current: 2 Expected: 3
+2024-03-15 14:22:48,001 WARN org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Replication queue backed up: 3821 blocks pending, only 4 datanodes available
+2024-03-15 14:22:50,112 ERROR org.apache.hadoop.hdfs.server.namenode.NameNodeRpcServer: Exception in RPC call from client 10.0.2.55:
+  java.io.IOException: File /user/hadoop/data/pipeline_output/part-00012 could only be replicated to 2 nodes instead of minReplication (1). There are 4 datanode(s) running and 1 node(s) are excluded in this operation.
+2024-03-15 14:22:50,441 ERROR org.apache.hadoop.hdfs.server.namenode.NameNodeRpcServer: Exception in RPC call from client 10.0.2.56:
+  java.io.IOException: File /user/hadoop/data/pipeline_output/part-00013 could only be replicated to 2 nodes instead of minReplication (1). There are 4 datanode(s) running and 1 node(s) are excluded in this operation.
+2024-03-15 14:22:55,001 ERROR org.apache.hadoop.hdfs.server.namenode.FSNamesystem: SafeMode ENTER: The ratio of reported blocks 0.9208 has not reached the threshold 0.9990. Safe mode will be turned off automatically once the threshold has been reached.
+2024-03-15 14:22:55,112 WARN org.apache.hadoop.hdfs.server.namenode.FSNamesystem: NameNode entering safe mode — write operations blocked
+2024-03-15 14:23:00,221 ERROR org.apache.hadoop.hdfs.server.namenode.NameNodeRpcServer: RPC call rejected — NameNode in safe mode. Write operation on /user/hadoop/data/pipeline_output/part-00014 rejected
+2024-03-15 14:23:00,332 ERROR org.apache.hadoop.hdfs.server.namenode.NameNodeRpcServer: RPC call rejected — NameNode in safe mode. Write operation on /user/hadoop/data/pipeline_output/part-00015 rejected
+2024-03-15 14:23:01,001 ERROR org.apache.hadoop.hdfs.server.namenode.NameNodeRpcServer: RPC call rejected — NameNode in safe mode. Write operation on /user/hadoop/data/pipeline_output/part-00016 rejected
+2024-03-15 14:23:10,221 WARN org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Still 3612 under-replicated blocks after 25 seconds. Replication is slow — only 4 live datanodes
+2024-03-15 14:23:30,441 WARN org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Still 2891 under-replicated blocks after 45 seconds
+2024-03-15 14:24:00,001 WARN org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Still 1823 under-replicated blocks after 75 seconds
+2024-03-15 14:24:30,112 WARN org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Still 891 under-replicated blocks after 105 seconds
+2024-03-15 14:25:00,221 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Under-replicated blocks: 0. Replication complete
+2024-03-15 14:25:00,332 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: SafeMode EXIT: All blocks have been replicated. Resuming normal operations
+2024-03-15 14:25:01,001 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Write operations resumed
+2024-03-15 14:25:30,221 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: 48291 blocks total, 0 corrupt, 0 under-replicated

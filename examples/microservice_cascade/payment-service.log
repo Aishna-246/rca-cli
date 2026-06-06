@@ -1,0 +1,30 @@
+2024-01-15 14:20:00,001 INFO [payment-service] Application started. Thread pool: min=10 max=50 queue=100
+2024-01-15 14:20:00,112 INFO [payment-service] Database connection pool initialized: min=5 max=20 connections to db-primary:5432
+2024-01-15 14:20:01,221 INFO [payment-service] Stripe webhook handler registered at /webhooks/stripe
+2024-01-15 14:20:30,331 INFO [payment-service] POST /internal/charge 200 — amount=4299 currency=INR txn=txn_3abc123 duration=234ms
+2024-01-15 14:21:00,441 INFO [payment-service] POST /internal/charge 200 — amount=1299 currency=INR txn=txn_3abc124 duration=198ms
+2024-01-15 14:21:30,551 INFO [payment-service] POST /internal/charge 200 — amount=8499 currency=INR txn=txn_3abc125 duration=221ms
+2024-01-15 14:22:00,661 INFO [payment-service] POST /internal/charge 200 — amount=2199 currency=INR txn=txn_3abc126 duration=187ms
+2024-01-15 14:22:30,771 INFO [payment-service] POST /internal/charge 200 — amount=5499 currency=INR txn=txn_3abc127 duration=209ms
+2024-01-15 14:22:45,112 INFO [payment-service] DB connection pool: active=3 idle=17 waiting=0
+2024-01-15 14:22:58,001 WARN [payment-service] DB query slow: SELECT * FROM transactions WHERE user_id=? took 2341ms (threshold: 500ms)
+2024-01-15 14:22:58,223 WARN [payment-service] DB query slow: INSERT INTO payment_audit took 1891ms (threshold: 500ms)
+2024-01-15 14:22:59,441 WARN [payment-service] DB connection pool: active=18 idle=2 waiting=4 — pool under pressure
+2024-01-15 14:23:00,001 ERROR [payment-service] DB connection timeout after 3000ms — could not acquire connection from pool
+	com.zaxxer.hikari.pool.HikariPool$PoolInitializationException: Failed to obtain DB connection
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:576)
+2024-01-15 14:23:00,112 ERROR [payment-service] DB connection timeout after 3000ms — could not acquire connection from pool
+2024-01-15 14:23:00,223 ERROR [payment-service] DB connection timeout after 3000ms — could not acquire connection from pool
+2024-01-15 14:23:00,334 WARN [payment-service] Thread pool: active=48 queued=89 — approaching capacity
+2024-01-15 14:23:01,001 ERROR [payment-service] Thread pool exhausted — rejecting request POST /internal/charge
+	java.util.concurrent.RejectedExecutionException: Task rejected from ThreadPoolExecutor [Running, pool size=50, active threads=50, queued tasks=100, completed tasks=4821]
+2024-01-15 14:23:01,112 ERROR [payment-service] Thread pool exhausted — rejecting request POST /internal/charge
+2024-01-15 14:23:01,223 ERROR [payment-service] Thread pool exhausted — rejecting request POST /internal/charge
+2024-01-15 14:23:01,334 ERROR [payment-service] Thread pool exhausted — rejecting request POST /internal/charge
+2024-01-15 14:23:02,001 ERROR [payment-service] Thread pool exhausted — rejecting request POST /internal/charge
+2024-01-15 14:23:02,112 ERROR [payment-service] Thread pool exhausted — rejecting request POST /internal/charge
+2024-01-15 14:23:10,221 ERROR [payment-service] Health check failed — DB connection unavailable. Reporting UNHEALTHY to load balancer
+2024-01-15 14:25:10,001 INFO [payment-service] DB connection pool recovered — active=2 idle=18 waiting=0
+2024-01-15 14:25:10,112 INFO [payment-service] Thread pool recovered — active=3 queued=0
+2024-01-15 14:25:11,221 INFO [payment-service] Health check passed. Reporting HEALTHY to load balancer
+2024-01-15 14:25:12,331 INFO [payment-service] POST /internal/charge 200 — amount=4299 currency=INR txn=txn_3abc128 duration=201ms

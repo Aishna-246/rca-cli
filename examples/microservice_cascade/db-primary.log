@@ -1,0 +1,30 @@
+2024-01-15 14:20:00,001 INFO [db-primary] PostgreSQL 15.4 started. max_connections=100 shared_buffers=256MB
+2024-01-15 14:20:00,112 INFO [db-primary] Listening on port 5432
+2024-01-15 14:20:30,221 INFO [db-primary] Connection from payment-service 10.0.1.21 accepted. Active connections: 3/100
+2024-01-15 14:21:00,331 INFO [db-primary] Connection from payment-service 10.0.1.21 accepted. Active connections: 4/100
+2024-01-15 14:21:30,441 INFO [db-primary] Checkpoint completed. Wrote 1823 buffers
+2024-01-15 14:22:00,551 INFO [db-primary] Active connections: 5/100. Idle: 15
+2024-01-15 14:22:30,661 INFO [db-primary] Autovacuum started on table public.transactions
+2024-01-15 14:22:38,001 WARN [db-primary] Autovacuum on public.transactions acquiring AccessShareLock — 4 queries waiting
+2024-01-15 14:22:40,112 WARN [db-primary] Lock contention on public.transactions — 8 queries waiting for AccessShareLock
+2024-01-15 14:22:42,223 WARN [db-primary] Lock contention on public.transactions — 14 queries waiting. Autovacuum holding lock for 4123ms
+2024-01-15 14:22:44,334 ERROR [db-primary] Lock wait timeout exceeded for query from 10.0.1.21: SELECT * FROM transactions WHERE user_id=12345 — waited 2000ms
+2024-01-15 14:22:44,445 ERROR [db-primary] Lock wait timeout exceeded for query from 10.0.1.21: INSERT INTO payment_audit — waited 2000ms
+2024-01-15 14:22:45,001 WARN [db-primary] Active connections: 19/100 — rapid growth detected
+2024-01-15 14:22:45,112 WARN [db-primary] Active connections: 28/100 — rapid growth detected
+2024-01-15 14:22:45,223 WARN [db-primary] Active connections: 41/100 — approaching limit
+2024-01-15 14:22:45,334 ERROR [db-primary] Active connections: 67/100 — connection spike
+2024-01-15 14:22:46,001 ERROR [db-primary] Active connections: 89/100 — critical threshold
+2024-01-15 14:22:46,112 ERROR [db-primary] FATAL: remaining connection slots reserved for replication. New connection from 10.0.1.21 rejected
+2024-01-15 14:22:46,223 ERROR [db-primary] FATAL: remaining connection slots reserved for replication. New connection from 10.0.1.21 rejected
+2024-01-15 14:22:46,334 ERROR [db-primary] FATAL: remaining connection slots reserved for replication. New connection from 10.0.1.21 rejected
+2024-01-15 14:22:47,001 ERROR [db-primary] FATAL: connection limit exceeded (100/100). Rejecting all new connections
+2024-01-15 14:22:47,112 ERROR [db-primary] FATAL: connection limit exceeded (100/100). Rejecting all new connections
+2024-01-15 14:22:47,223 ERROR [db-primary] FATAL: connection limit exceeded (100/100). Rejecting all new connections
+2024-01-15 14:23:00,334 INFO [db-primary] Autovacuum completed on public.transactions. Lock released
+2024-01-15 14:23:00,445 INFO [db-primary] Lock contention cleared. 0 queries waiting
+2024-01-15 14:23:30,001 INFO [db-primary] Idle connections being released. Active: 71/100
+2024-01-15 14:24:00,112 INFO [db-primary] Active connections: 34/100 — normalizing
+2024-01-15 14:24:30,221 INFO [db-primary] Active connections: 18/100 — normal
+2024-01-15 14:25:00,331 INFO [db-primary] Active connections: 6/100 — recovered
+2024-01-15 14:25:10,441 INFO [db-primary] System fully recovered. All queries executing normally

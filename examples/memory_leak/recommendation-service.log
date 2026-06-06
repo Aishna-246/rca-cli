@@ -1,0 +1,35 @@
+2024-02-20 10:00:01,112 INFO [recommendation-service] Application started. JVM heap: 512MB max, 128MB initial
+2024-02-20 10:00:01,223 INFO [recommendation-service] ML model loaded: collaborative_filter_v3.pkl (size: 89MB)
+2024-02-20 10:00:01,334 INFO [recommendation-service] Cache initialized: LRU max_size=10000 items
+2024-02-20 10:00:30,441 INFO [recommendation-service] GET /recommend/user/12345 200 — 45ms heap_used=134MB
+2024-02-20 10:15:00,551 INFO [recommendation-service] GET /recommend/user/12346 200 — 48ms heap_used=156MB
+2024-02-20 10:30:00,661 INFO [recommendation-service] GET /recommend/user/12347 200 — 51ms heap_used=178MB
+2024-02-20 10:45:00,771 INFO [recommendation-service] GET /recommend/user/12348 200 — 53ms heap_used=201MB
+2024-02-20 10:45:00,882 INFO [recommendation-service] GC: Minor GC — freed 12MB in 23ms. heap_used=189MB
+2024-02-20 11:00:00,991 INFO [recommendation-service] GET /recommend/user/12349 200 — 58ms heap_used=221MB
+2024-02-20 11:15:00,101 WARN [recommendation-service] Heap usage: 251MB / 512MB (49%) — elevated
+2024-02-20 11:15:00,212 INFO [recommendation-service] GC: Minor GC — freed 8MB in 31ms. heap_used=243MB
+2024-02-20 11:30:00,321 WARN [recommendation-service] Heap usage: 289MB / 512MB (56%) — elevated
+2024-02-20 11:45:00,431 WARN [recommendation-service] Heap usage: 334MB / 512MB (65%) — elevated
+2024-02-20 11:45:00,542 INFO [recommendation-service] GC: Major GC — freed 21MB in 412ms. heap_used=313MB
+2024-02-20 12:00:00,651 WARN [recommendation-service] Heap usage: 367MB / 512MB (71%) — high
+2024-02-20 12:00:00,762 WARN [recommendation-service] Cache size: 9821 items — approaching max_size=10000
+2024-02-20 12:15:00,871 WARN [recommendation-service] Heap usage: 412MB / 512MB (80%) — high. GC pressure increasing
+2024-02-20 12:15:01,982 INFO [recommendation-service] GC: Major GC — freed 18MB in 891ms. heap_used=394MB
+2024-02-20 12:30:00,091 ERROR [recommendation-service] Heap usage: 451MB / 512MB (88%) — critical
+2024-02-20 12:30:00,202 WARN [recommendation-service] GC overhead limit approaching — 15% of CPU time spent in GC
+2024-02-20 12:30:01,313 INFO [recommendation-service] GC: Major GC — freed 9MB in 2341ms. heap_used=442MB
+2024-02-20 12:45:00,421 ERROR [recommendation-service] Heap usage: 489MB / 512MB (95%) — critical. OOM imminent
+2024-02-20 12:45:00,532 ERROR [recommendation-service] GC overhead limit exceeded — application threads paused for 4891ms
+2024-02-20 12:45:01,643 ERROR [recommendation-service] GC: Major GC — freed 3MB in 8123ms. heap_used=486MB
+2024-02-20 12:45:02,001 ERROR [recommendation-service] Cache eviction failing — cannot free memory fast enough
+2024-02-20 12:45:10,112 ERROR [recommendation-service] GET /recommend/user/99999 500 — OutOfMemoryError: Java heap space
+	java.lang.OutOfMemoryError: Java heap space
+	at java.util.HashMap.resize(HashMap.java:704)
+	at com.company.recommender.UserProfileCache.put(UserProfileCache.java:89)
+	at com.company.recommender.RecommendationEngine.buildUserVector(RecommendationEngine.java:234)
+2024-02-20 12:45:10,223 ERROR [recommendation-service] GET /recommend/user/99998 500 — OutOfMemoryError: Java heap space
+2024-02-20 12:45:10,334 ERROR [recommendation-service] GET /recommend/user/99997 500 — OutOfMemoryError: Java heap space
+2024-02-20 12:45:11,001 ERROR [recommendation-service] FATAL: JVM out of memory. Process terminating
+2024-02-20 12:45:11,112 INFO [recommendation-service] Shutdown hook: saving state before exit
+2024-02-20 12:45:11,223 INFO [recommendation-service] Process exited with code 1
