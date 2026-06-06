@@ -1,0 +1,36 @@
+2024-01-01 02:09:05,210 INFO [payment-service] POST /api/charge status=200 txn=pay-44001 amount=49.99 latency_ms=82
+2024-01-01 02:09:22,430 INFO [payment-service] POST /api/charge status=200 txn=pay-44002 amount=129.00 latency_ms=76
+2024-01-01 02:09:40,650 INFO [payment-service] POST /api/refund status=200 txn=ref-8801 latency_ms=91
+2024-01-01 02:10:01,870 INFO [payment-service] POST /api/charge status=200 txn=pay-44003 amount=22.50 latency_ms=68
+2024-01-01 02:10:19,090 INFO [payment-service] POST /api/charge status=200 txn=pay-44004 amount=199.99 latency_ms=74
+2024-01-01 02:10:36,310 INFO [payment-service] GET /health status=200 latency_ms=4
+2024-01-01 02:10:54,530 INFO [payment-service] POST /api/charge status=200 txn=pay-44005 amount=55.00 latency_ms=71
+2024-01-01 02:11:12,750 INFO [payment-service] POST /api/charge status=200 txn=pay-44006 amount=88.00 latency_ms=79
+2024-01-01 02:11:30,970 INFO [payment-service] POST /api/charge status=200 txn=pay-44007 amount=34.99 latency_ms=85
+2024-01-01 02:11:48,190 INFO [payment-service] POST /api/charge status=200 txn=pay-44008 amount=150.00 latency_ms=73
+2024-01-01 02:12:06,410 INFO [payment-service] POST /api/charge status=200 txn=pay-44009 amount=67.25 latency_ms=80
+2024-01-01 02:12:24,630 INFO [payment-service] POST /api/charge status=200 txn=pay-44010 amount=41.00 latency_ms=77
+2024-01-01 02:12:42,850 INFO [payment-service] POST /api/charge status=200 txn=pay-44011 amount=95.50 latency_ms=69
+2024-01-01 02:13:01,070 INFO [payment-service] POST /api/charge status=200 txn=pay-44012 amount=12.99 latency_ms=88
+2024-01-01 02:13:19,290 INFO [payment-service] POST /api/charge status=200 txn=pay-44013 amount=210.00 latency_ms=92
+2024-01-01 02:13:41,512 ERROR [payment-service] DB connection timeout acquiring connection from pool wait_ms=5000
+2024-01-01 02:13:43,734 ERROR [payment-service] DB connection timeout acquiring connection from pool wait_ms=5000
+2024-01-01 02:13:46,956 ERROR [payment-service] DB connection timeout acquiring connection from pool wait_ms=5000
+2024-01-01 02:13:49,178 ERROR [payment-service] DB connection timeout acquiring connection from pool wait_ms=5000 txn=pay-44014
+2024-01-01 02:13:52,400 ERROR [payment-service] DB connection timeout acquiring connection from pool wait_ms=5000
+2024-01-01 02:13:55,622 WARN [payment-service] Elevated request latency p99=4200ms threshold=1000ms
+2024-01-01 02:13:58,844 WARN [payment-service] Request queued behind slow DB pool pool_used=48/50
+2024-01-01 02:14:02,066 ERROR [payment-service] DB connection timeout acquiring connection from pool wait_ms=5000
+2024-01-01 02:14:05,288 WARN [payment-service] Elevated request latency p99=5100ms threshold=1000ms
+2024-01-01 02:14:08,510 ERROR [payment-service] DB connection timeout acquiring connection from pool wait_ms=5000 txn=pay-44015
+2024-01-01 02:14:12,732 WARN [payment-service] Elevated request latency p99=5800ms threshold=1000ms
+2024-01-01 02:14:16,954 ERROR [payment-service] DB connection timeout acquiring connection from pool wait_ms=5000
+2024-01-01 02:14:20,176 WARN [payment-service] Request queued behind slow DB pool pool_used=47/50
+2024-01-01 02:14:24,398 WARN [payment-service] Elevated request latency p99=4900ms threshold=1000ms
+2024-01-01 02:14:28,620 ERROR [payment-service] DB connection timeout acquiring connection from pool wait_ms=5000
+2024-01-01 02:14:32,842 WARN [payment-service] Elevated request latency p99=3800ms threshold=1000ms
+2024-01-01 02:14:45,064 INFO [payment-service] DB connection pool recovered pool_used=12/50 wait_ms=0
+2024-01-01 02:14:52,286 INFO [payment-service] POST /api/charge status=200 txn=pay-44016 amount=75.00 latency_ms=94
+2024-01-01 02:15:08,508 INFO [payment-service] POST /api/charge status=200 txn=pay-44017 amount=33.50 latency_ms=78
+2024-01-01 02:15:24,730 INFO [payment-service] POST /api/charge status=200 txn=pay-44018 amount=102.00 latency_ms=71
+2024-01-01 02:15:40,952 INFO [payment-service] GET /health status=200 latency_ms=3
