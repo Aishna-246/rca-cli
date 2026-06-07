@@ -1,5 +1,7 @@
 """Run Granger causality tests between anomalous metric pairs."""
 
+import warnings
+
 import pandas as pd
 from statsmodels.tsa.stattools import adfuller, grangercausalitytests
 
@@ -24,7 +26,7 @@ def run_causality_analysis(anomaly_series: dict[str, pd.Series]) -> list[dict]:
                 how="inner",
             )
 
-            if len(merged) < 10:
+            if len(merged) < 6:
                 continue
 
             try:
@@ -33,14 +35,23 @@ def run_causality_analysis(anomaly_series: dict[str, pd.Series]) -> list[dict]:
                 adf_y = adfuller(merged["Y"].values, autolag="AIC")
                 y_series = merged["Y"] if adf_y[1] <= 0.05 else merged["Y"].diff().dropna()
                 frame = pd.concat([x_series, y_series], axis=1, keys=["X", "Y"]).dropna()
-                if len(frame) < 10:
+                if len(frame) < 6:
                     continue
 
-                test_result = grangercausalitytests(frame[["Y", "X"]], maxlag=4, verbose=False)
-                p_value = min(
-                    test_result[lag][0]["ssr_ftest"][1] for lag in range(1, 5)
-                )
-                if p_value < 0.05:
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", FutureWarning)
+                    res_lag2 = grangercausalitytests(
+                        frame[["Y", "X"]], maxlag=2, verbose=False
+                    )
+                    res_lag4 = grangercausalitytests(
+                        frame[["Y", "X"]], maxlag=4, verbose=False
+                    )
+                p_lag2 = res_lag2[1][0]["ssr_ftest"][1]
+                p_lag4 = res_lag4[1][0]["ssr_ftest"][1]
+                p_value = min(p_lag2, p_lag4)
+
+                threshold = 0.15 if len(frame) < 30 else 0.05
+                if p_value < threshold:
                     results.append(
                         {
                             "cause": key_x,

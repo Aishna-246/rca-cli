@@ -127,26 +127,38 @@ def run_incident_analysis(
     since: str | None = None,
     explain: bool = False,
 ) -> dict[str, Any]:
+    if not log_paths and not metrics_path:
+        raise ValueError("Provide at least one log file (--logs) or a metrics file (--metrics)")
+
     incident_start = _parse_since(since)
 
+    # --- Parse logs ---
     log_events: list[dict] = []
     for log_path in log_paths:
         log_events.extend(parse_log_file(str(log_path)))
 
-    if not log_events:
-        raise ValueError("No log events parsed from uploaded files")
-
-    norm_events = normalize_events(log_events)
-    log_anomaly_events = extract_anomaly_events(norm_events, since=incident_start)
-
+    # --- Parse metrics ---
     metrics_df = pd.DataFrame()
     if metrics_path:
         metrics_df = parse_prometheus_json(str(metrics_path))
 
+    # --- Metrics-only mode: synthesise log-compatible events from metrics ---
+    metrics_only = not log_events and not metrics_df.empty
+    if not log_events:
+        if metrics_df.empty:
+            raise ValueError("No log events parsed and no usable metrics data found")
+        synthetic_events = anomaly.detect_anomalies_from_metrics_only(metrics_df)
+        log_anomaly_events = [e for e in synthetic_events if e["ts"] >= incident_start]
+    else:
+        norm_events = normalize_events(log_events)
+        log_anomaly_events = extract_anomaly_events(norm_events, since=incident_start)
+
+    # --- Metric anomaly detection ---
     metric_anomalies = []
     if not metrics_df.empty:
         metric_anomalies = anomaly.detect_metric_anomalies(metrics_df, z_threshold=2.5)
 
+    # --- Causal analysis ---
     anomaly_series = _build_anomaly_series(metrics_df)
     causal_results = (
         causality.run_causality_analysis(anomaly_series) if anomaly_series else []
@@ -176,6 +188,7 @@ def run_incident_analysis(
         "graph": graph_payload,
         "llm_explanation": llm_explanation,
         "event_count": len(log_anomaly_events),
+        "metrics_only": metrics_only,
         "log_files": [p.name for p in log_paths],
         "metrics_file": metrics_path.name if metrics_path else None,
     }

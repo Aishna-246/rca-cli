@@ -4,16 +4,26 @@ import os
 import json
 import pandas as pd
 
+
 def parse_prometheus_json(filepath: str) -> pd.DataFrame:
     """
-    Parse Prometheus query_range JSON or metric CSV export into a flat DataFrame.
+    Parse metrics data into a flat DataFrame with columns:
+        metric_name, service, timestamp, value
 
-    Supports two formats:
-    - query_range JSON (columns: metric_name, service, timestamp, value)
-    - CSV (columns: metric_name, [service], timestamp, value)
+    Supports three formats (auto-detected):
 
-    Auto-detects format from file extension.
-    Returns: pd.DataFrame or empty DataFrame on error.
+    1. Prometheus query_range JSON
+       { "data": { "result": [ { "metric": {...}, "values": [[ts, val], ...] } ] } }
+
+    2. Standard CSV
+       Required columns: metric_name, timestamp, value
+       Optional column:  service
+
+    3. RCAEval CSV
+       Columns: timestamp, service_name, metric_name, value
+       (column order/names as produced by the RCAEval benchmark download utility)
+
+    Returns an empty DataFrame on error or unrecognised format.
     """
     if not filepath or not os.path.exists(filepath) or not os.path.isfile(filepath):
         return pd.DataFrame(columns=["metric_name", "service", "timestamp", "value"])
@@ -37,28 +47,48 @@ def parse_prometheus_json(filepath: str) -> pd.DataFrame:
                             "metric_name": metric_name,
                             "service": service,
                             "timestamp": float(timestamp),
-                            "value": float(val)
+                            "value": float(val),
                         })
                     except Exception:
                         continue
             return pd.DataFrame(rows, columns=["metric_name", "service", "timestamp", "value"])
+
         elif ext == ".csv":
             df = pd.read_csv(filepath)
-            # Required columns: metric_name, timestamp, value. Optional: service.
-            # Normalize columns present.
+            cols = set(df.columns)
+
+            # --- RCAEval format: timestamp, service_name, metric_name, value ---
+            rcaeval_cols = {"timestamp", "service_name", "metric_name", "value"}
+            if rcaeval_cols.issubset(cols):
+                df = df.copy()
+                df = df.rename(columns={"service_name": "service"})
+                df["timestamp"] = pd.to_numeric(df["timestamp"], errors="coerce")
+                df["value"] = pd.to_numeric(df["value"], errors="coerce")
+                return (
+                    df[["metric_name", "service", "timestamp", "value"]]
+                    .dropna(subset=["metric_name", "timestamp", "value"])
+                    .reset_index(drop=True)
+                )
+
+            # --- Standard CSV format: metric_name, timestamp, value[, service] ---
             req_cols = {"metric_name", "timestamp", "value"}
-            has_service = "service" in df.columns
-            if not req_cols.issubset(df.columns):
-                return pd.DataFrame(columns=["metric_name", "service", "timestamp", "value"])
-            # Ensure types
-            df = df.copy()
-            df["timestamp"] = pd.to_numeric(df["timestamp"], errors="coerce")
-            df["value"] = pd.to_numeric(df["value"], errors="coerce")
-            if not has_service:
-                df["service"] = None
-            # Only keep relevant columns
-            return df[["metric_name", "service", "timestamp", "value"]].dropna(subset=["metric_name", "timestamp", "value"])
+            if req_cols.issubset(cols):
+                df = df.copy()
+                df["timestamp"] = pd.to_numeric(df["timestamp"], errors="coerce")
+                df["value"] = pd.to_numeric(df["value"], errors="coerce")
+                if "service" not in cols:
+                    df["service"] = None
+                return (
+                    df[["metric_name", "service", "timestamp", "value"]]
+                    .dropna(subset=["metric_name", "timestamp", "value"])
+                    .reset_index(drop=True)
+                )
+
+            # Unrecognised CSV schema
+            return pd.DataFrame(columns=["metric_name", "service", "timestamp", "value"])
+
         else:
             return pd.DataFrame(columns=["metric_name", "service", "timestamp", "value"])
+
     except Exception:
         return pd.DataFrame(columns=["metric_name", "service", "timestamp", "value"])

@@ -17,16 +17,29 @@ console = Console()
 
 @app.command()
 def main(
-    logs: List[Path] = typer.Option(..., "--logs", help="Log files to analyze"),
-    metrics: Optional[Path] = typer.Option(None, "--metrics", help="Prometheus JSON or CSV"),
+    logs: Optional[List[Path]] = typer.Option(
+        None, "--logs", help="Log files to analyze (optional if --metrics provided)"
+    ),
+    metrics: Optional[Path] = typer.Option(
+        None, "--metrics", help="Metrics file in Prometheus JSON or RCAEval CSV format"
+    ),
     since: Optional[str] = typer.Option(None, "--since", help="Start of incident window"),
     explain: bool = typer.Option(False, "--explain", help="Generate LLM plain-English explanation"),
     output_json: Optional[Path] = typer.Option(None, "--output", help="Save JSON report to file"),
 ) -> None:
     """Analyze logs and metrics to detect root causes."""
     try:
+        log_paths = list(logs) if logs else []
+
+        if not log_paths and not metrics:
+            console.print("[bold red]Error: Provide at least one --logs file or a --metrics file.[/bold red]")
+            raise typer.Exit(code=1)
+
+        if not log_paths and metrics:
+            console.print("[yellow]Running in metrics-only mode — no log files provided[/yellow]")
+
         result = run_incident_analysis(
-            log_paths=list(logs),
+            log_paths=log_paths,
             metrics_path=metrics,
             since=since,
             explain=explain,
@@ -34,7 +47,7 @@ def main(
 
         print_report(
             ranked_causes=result["root_causes"],
-            log_files=[str(p) for p in logs],
+            log_files=[str(p) for p in log_paths],
             metrics_file=str(metrics) if metrics else None,
             event_count=result["event_count"],
             incident_start=result["incident_start"],
