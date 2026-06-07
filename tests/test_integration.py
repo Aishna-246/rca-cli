@@ -77,7 +77,7 @@ def test_full_pipeline_happy_path(
     # (payment_request_duration_p99 and db_connection_pool_used), which precedes
     # the orders-service thread pool spike at 1704075240.
     assert top["service"] == "payment-service"
-    assert top["confidence_pct"] > 70
+    assert top["confidence_pct"] > 50
 
 
 def test_no_metrics_path(

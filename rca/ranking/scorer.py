@@ -41,7 +41,7 @@ def score_root_causes(
         base_score = float(candidate.get("score", 0))
         service, metric = extract_service_metric(service_metric)
         log_errors = log_errors_by_service.get(service, [])
-        log_bonus = 0.5 * len(log_errors)
+        log_bonus = min(0.5 * len(log_errors), base_score)
         anomaly = anomalies_by_key.get((service, metric))
         anomaly_at = anomaly.get("anomaly_at") if anomaly else None
         # Temporal bonus: reward services whose anomaly appears earliest.
