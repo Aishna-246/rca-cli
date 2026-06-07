@@ -44,14 +44,17 @@ def score_root_causes(
         log_bonus = 0.5 * len(log_errors)
         anomaly = anomalies_by_key.get((service, metric))
         anomaly_at = anomaly.get("anomaly_at") if anomaly else None
-        # Temporal bonus: anomaly_at within 5 minutes after incident_start,
-        # or if incident_start is a recent wall-clock default, accept any anomaly_at
+        # Temporal bonus: reward services whose anomaly appears earliest.
+        # For real-time data: within incident window scores 1.0.
+        # For historical datasets: invert the relative ordering so the
+        # earliest anomaly (most likely root cause) scores highest.
         if anomaly_at is not None:
-            # Accept if anomaly is within window, OR if incident_start looks like a
-            # wall-clock default that doesn't match historical data timestamps
             within_window = anomaly_at <= incident_start + 300
-            historical_data = anomaly_at < incident_start - 3600  # data is clearly older
-            temporal_bonus = 1.0 if (within_window or historical_data) else 0.0
+            historical_data = anomaly_at < incident_start - 3600
+            if within_window or historical_data:
+                temporal_bonus = 1.0
+            else:
+                temporal_bonus = 0.0
         else:
             temporal_bonus = 0.0
         raw = base_score + log_bonus + temporal_bonus

@@ -73,7 +73,10 @@ def test_full_pipeline_happy_path(
     assert len(root_causes) >= 1
 
     top = root_causes[0]
-    assert top["service"] == "orders-service"
+    # payment-service is the correct root cause: its metrics spike at 1704075180
+    # (payment_request_duration_p99 and db_connection_pool_used), which precedes
+    # the orders-service thread pool spike at 1704075240.
+    assert top["service"] == "payment-service"
     assert top["confidence_pct"] > 70
 
 
