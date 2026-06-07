@@ -161,7 +161,9 @@ def run_incident_analysis(
     # --- Causal analysis ---
     anomaly_series = _build_anomaly_series(metrics_df)
     causal_results = (
-        causality.run_causality_analysis(anomaly_series) if anomaly_series else []
+        causality.run_causality_analysis(anomaly_series, anomaly_list=metric_anomalies)
+        if anomaly_series
+        else causality.temporal_precedence_analysis(metric_anomalies) if metric_anomalies else []
     )
     causal_graph = graph.build_causal_graph(causal_results)
     root_candidates = graph.identify_root_causes(causal_graph)

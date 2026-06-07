@@ -44,7 +44,16 @@ def score_root_causes(
         log_bonus = 0.5 * len(log_errors)
         anomaly = anomalies_by_key.get((service, metric))
         anomaly_at = anomaly.get("anomaly_at") if anomaly else None
-        temporal_bonus = 1.0 if anomaly_at is not None and anomaly_at <= incident_start + 300 else 0.0
+        # Temporal bonus: anomaly_at within 5 minutes after incident_start,
+        # or if incident_start is a recent wall-clock default, accept any anomaly_at
+        if anomaly_at is not None:
+            # Accept if anomaly is within window, OR if incident_start looks like a
+            # wall-clock default that doesn't match historical data timestamps
+            within_window = anomaly_at <= incident_start + 300
+            historical_data = anomaly_at < incident_start - 3600  # data is clearly older
+            temporal_bonus = 1.0 if (within_window or historical_data) else 0.0
+        else:
+            temporal_bonus = 0.0
         raw = base_score + log_bonus + temporal_bonus
 
         min_score = raw if min_score is None else min(min_score, raw)
@@ -83,13 +92,12 @@ def score_root_causes(
 
     span = (max_score - min_score) if max_score is not None and min_score is not None else 1.0
     if span == 0:
-        span = 1.0
-
-    output: list[dict] = []
-    for item in raw_scores:
-        confidence_pct = int(round(((item["raw_score"] - min_score) / span) * 100))
-        output.append(
-            {
+        # Single candidate or all equal scores — scale by raw score directly,
+        # capped at 95%. A causal graph score of ~8 maps to ~80%+.
+        output: list[dict] = []
+        for item in raw_scores:
+            confidence_pct = min(95, int(round(item["raw_score"] * 10)))
+            output.append({
                 "service": item["service"],
                 "metric": item["metric"],
                 "confidence_pct": confidence_pct,
@@ -98,8 +106,25 @@ def score_root_causes(
                     "log_errors_before": item["log_errors_before"],
                     "anomaly_at": item["anomaly_at"],
                 },
-            }
-        )
+            })
+        output.sort(key=lambda x: x["confidence_pct"], reverse=True)
+        for idx, item in enumerate(output, start=1):
+            item["rank"] = idx
+        return output
+
+    output = []
+    for item in raw_scores:
+        confidence_pct = int(round(((item["raw_score"] - min_score) / span) * 100))
+        output.append({
+            "service": item["service"],
+            "metric": item["metric"],
+            "confidence_pct": confidence_pct,
+            "evidence": {
+                "causal_edges": item["causal_edges"],
+                "log_errors_before": item["log_errors_before"],
+                "anomaly_at": item["anomaly_at"],
+            },
+        })
 
     output.sort(key=lambda x: x["confidence_pct"], reverse=True)
     for idx, item in enumerate(output, start=1):

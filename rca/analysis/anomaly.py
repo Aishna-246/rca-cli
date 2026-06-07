@@ -7,7 +7,15 @@ import numpy as np
 
 
 def detect_metric_anomalies(df: pd.DataFrame, z_threshold: float = 2.0) -> list[dict]:
-    """Detect anomalies using Z-score outlier detection per metric series."""
+    """Detect anomalies using multiple detection methods per metric series.
+
+    Three methods run in parallel; any match flags the point:
+    1. Z-score (threshold lowered to 1.5 for series with < 15 points)
+    2. Percentage jump: pct_change > 200% from previous value
+    3. Baseline vs peak: peak > 3x the mean of the first 5 values
+
+    Results are deduplicated by (metric, service, timestamp).
+    """
     if df is None or df.empty:
         return []
 
@@ -15,22 +23,44 @@ def detect_metric_anomalies(df: pd.DataFrame, z_threshold: float = 2.0) -> list[
     if not required.issubset(df.columns):
         return []
 
-    anomalies: list[dict] = []
+    # Use a dict keyed by (metric, service, timestamp) to deduplicate
+    seen: dict[tuple, dict] = {}
     grouped = df.groupby(["metric_name", "service"], dropna=False)
 
     for (metric_name, service), group in grouped:
         group_sorted = group.sort_values("timestamp").reset_index(drop=True)
-        values = group_sorted["value"]
+        values = group_sorted["value"].astype(float)
+        n = len(group_sorted)
 
-        if len(group_sorted) < 5:
+        def _add(idx: int, z_val: float | None = None) -> None:
+            ts = float(group_sorted.iloc[idx]["timestamp"])
+            key = (metric_name, service, ts)
+            if key not in seen:
+                val = float(values.iloc[idx])
+                seen[key] = {
+                    "metric": metric_name,
+                    "service": service,
+                    "anomaly_at": ts,
+                    "value": val,
+                    "z_score": round(z_val, 4) if z_val is not None else None,
+                    "direction": "spike" if val >= values.mean() else "drop",
+                }
+
+        # --- Method 1: Z-score (adaptive threshold for small series) ---
+        effective_threshold = 1.5 if n < 15 else z_threshold
+        if n < 5:
             mean = values.mean()
             std = values.std()
             if std == 0 or pd.isna(std):
-                continue
-            z_scores = (values - mean) / std
+                z_scores = pd.Series([0.0] * n)
+            else:
+                z_scores = (values - mean) / std
         else:
             rolling_mean = values.rolling(window=5, min_periods=1).mean()
             rolling_std = values.rolling(window=5, min_periods=1).std(ddof=0).replace(0, pd.NA)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", FutureWarning)
+                rolling_std = rolling_std.fillna(values.std(ddof=0) or 1.0)
             z_scores = (values - rolling_mean) / rolling_std
 
         for idx, z in enumerate(z_scores):
@@ -38,20 +68,29 @@ def detect_metric_anomalies(df: pd.DataFrame, z_threshold: float = 2.0) -> list[
                 z_val = float(z)
             except (TypeError, ValueError):
                 continue
-            if pd.isna(z_val) or abs(z_val) <= z_threshold:
-                continue
-            anomalies.append(
-                {
-                    "metric": metric_name,
-                    "service": service,
-                    "anomaly_at": float(group_sorted.iloc[idx]["timestamp"]),
-                    "value": float(values.iloc[idx]),
-                    "z_score": z_val,
-                    "direction": "spike" if z_val > 0 else "drop",
-                }
-            )
+            if not pd.isna(z_val) and abs(z_val) > effective_threshold:
+                _add(idx, z_val)
 
-    return anomalies
+        # --- Method 2: Percentage jump > 200% from previous value ---
+        pct_change = values.pct_change().abs()
+        for idx, pct in enumerate(pct_change):
+            try:
+                pct_val = float(pct)
+            except (TypeError, ValueError):
+                continue
+            if not pd.isna(pct_val) and pct_val > 2.0:  # > 200%
+                _add(idx)
+
+        # --- Method 3: Baseline vs peak (peak > 3x mean of first 5 values) ---
+        if n >= 5:
+            baseline = float(values.iloc[:5].mean())
+            if baseline > 0:
+                peak_idx = int(values.idxmax())
+                peak_val = float(values.iloc[peak_idx])
+                if peak_val > baseline * 3.0:
+                    _add(peak_idx)
+
+    return list(seen.values())
 
 
 def detect_anomalies_from_metrics_only(df: pd.DataFrame) -> list[dict]:
