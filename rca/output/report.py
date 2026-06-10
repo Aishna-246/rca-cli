@@ -61,6 +61,7 @@ def print_report(
     incident_start: float,
     llm_explanation: str | None = None,
     output_file: str = "report.json",
+    metric_anomaly_count: int = 0,
 ) -> None:
     console = Console()
     # HEADER PANEL
@@ -77,11 +78,21 @@ def print_report(
             return os.path.basename(filename)
     log_files_str = ", ".join([file_with_lines(f) for f in log_files])
     metrics_file_str = os.path.basename(metrics_file) if metrics_file else "none"
-    events_str = f"{event_count} anomaly event{'s' if event_count != 1 else ''}"
+
+    if event_count == 0 and metric_anomaly_count > 0:
+        events_line = f"{metric_anomaly_count} metric signal{'s' if metric_anomaly_count != 1 else ''} detected"
+        events_label = "Metric anomalies"
+    elif event_count > 0 and metric_anomaly_count > 0:
+        events_line = f"{event_count} log event{'s' if event_count != 1 else ''} + {metric_anomaly_count} metric signal{'s' if metric_anomaly_count != 1 else ''}"
+        events_label = "Events"
+    else:
+        events_line = f"{event_count} anomaly event{'s' if event_count != 1 else ''}"
+        events_label = "Events"
+
     parsed_table = Table(show_header=False, box=None, show_edge=False, pad_edge=False, style="cyan")
-    parsed_table.add_row("Log files", f": {log_files_str}")
-    parsed_table.add_row("Metrics",   f": {metrics_file_str}")
-    parsed_table.add_row("Events",    f": {events_str}")
+    parsed_table.add_row("Log files",    f": {log_files_str}")
+    parsed_table.add_row("Metrics",      f": {metrics_file_str}")
+    parsed_table.add_row(events_label,   f": {events_line}")
 
     panel_input = Panel(
         Align.left(parsed_table),

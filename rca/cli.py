@@ -53,6 +53,7 @@ def main(
             incident_start=result["incident_start"],
             llm_explanation=result.get("llm_explanation"),
             output_file=str(output_json) if output_json else "report.json",
+            metric_anomaly_count=result.get("metric_anomaly_count", 0),
         )
 
         raise typer.Exit(code=0)

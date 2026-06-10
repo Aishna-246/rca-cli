@@ -190,6 +190,7 @@ def run_incident_analysis(
         "graph": graph_payload,
         "llm_explanation": llm_explanation,
         "event_count": len(log_anomaly_events),
+        "metric_anomaly_count": len(metric_anomalies),
         "metrics_only": metrics_only,
         "log_files": [p.name for p in log_paths],
         "metrics_file": metrics_path.name if metrics_path else None,
